@@ -1,0 +1,122 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>21Deep</title>
+  <meta name="description" content="A five-column solitaire variant of blackjack, with a built-in neural-network advisor.">
+  <link rel="icon" href="assets/icons/favicon.svg" type="image/svg+xml">
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+  <main id="game">
+    <!-- LEFT PANEL: title, stats, draw area -->
+    <aside id="left-panel">
+      <div class="panel-header">21Deep</div>
+
+      <table id="stats">
+        <tbody>
+          <tr><td>Score</td>     <td align="center"><b id="score">0</b></td></tr>
+          <tr><td>Draw pile</td> <td align="center"><b id="draw-count">51</b></td></tr>
+        </tbody>
+      </table>
+
+      <div id="draw-area">
+        <div class="card-pair">
+          <img class="card deck-back" src="assets/cards/backs/deck.svg" alt="draw pile">
+          <img id="current-card" class="card" alt="">
+        </div>
+      </div>
+
+      <div id="message" aria-live="polite"></div>
+
+      <button id="new-game" type="button">New game</button>
+    </aside>
+
+    <!-- RIGHT PANEL: columns -->
+    <section id="right-panel">
+      <div id="advisor-bar">
+        <span id="advisor-status" aria-live="polite"></span>
+        <button id="robot" type="button" aria-pressed="false" title="Alpha21 advisor: highlight the best column">
+          <svg viewBox="0 0 32 32" width="26" height="26" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <line x1="16" y1="3.5" x2="16" y2="8"/>
+            <circle cx="16" cy="3" r="1.4" fill="currentColor" stroke="none"/>
+            <rect x="6" y="8" width="20" height="16" rx="5"/>
+            <circle class="eye" cx="12" cy="15" r="2" fill="currentColor" stroke="none"/>
+            <circle class="eye" cx="20" cy="15" r="2" fill="currentColor" stroke="none"/>
+            <path d="M12.5 20h7"/>
+            <path d="M6 14H3.5v5H6M26 14h2.5v5H26"/>
+          </svg>
+          <span class="visually-hidden">Toggle advisor</span>
+        </button>
+      </div>
+      <div id="columns">
+        <div class="column" data-col="0">
+          <button class="col-header" data-col="0" aria-label="Place in column 1">
+            <img class="arrow" src="assets/icons/arrow.svg" alt="">
+          </button>
+          <div class="col-cards" id="col-0"></div>
+          <div class="col-sum" id="sum-0">0</div>
+        </div>
+        <div class="column" data-col="1">
+          <button class="col-header" data-col="1" aria-label="Place in column 2">
+            <img class="arrow" src="assets/icons/arrow.svg" alt="">
+          </button>
+          <div class="col-cards" id="col-1"></div>
+          <div class="col-sum" id="sum-1">0</div>
+        </div>
+        <div class="column" data-col="2">
+          <button class="col-header" data-col="2" aria-label="Place in column 3">
+            <img class="arrow" src="assets/icons/arrow.svg" alt="">
+          </button>
+          <div class="col-cards" id="col-2"></div>
+          <div class="col-sum" id="sum-2">0</div>
+        </div>
+        <div class="column" data-col="3">
+          <button class="col-header" data-col="3" aria-label="Place in column 4">
+            <img class="arrow" src="assets/icons/arrow.svg" alt="">
+          </button>
+          <div class="col-cards" id="col-3"></div>
+          <div class="col-sum" id="sum-3">0</div>
+        </div>
+        <div class="column" data-col="4">
+          <button class="col-header" data-col="4" aria-label="Place in column 5">
+            <img class="arrow" src="assets/icons/arrow.svg" alt="">
+          </button>
+          <div class="col-cards" id="col-4"></div>
+          <div class="col-sum" id="sum-4">0</div>
+        </div>
+      </div>
+    </section>
+  </main>
+<details id="combos">
+  <summary>Combos</summary>
+  <table class="combo-table">
+    <thead>
+      <tr><th>Points</th><th>Combination</th><th>Instructions</th></tr>
+    </thead>
+    <tbody>
+      <tr><td>10</td><td>21</td><td>Any 3 cards totaling 21</td></tr>
+      <tr><td>15</td><td>Large 21</td><td>4+ cards totaling 21</td></tr>
+      <tr><td>15</td><td>6-7-8</td><td>6, 7, and 8 in one column</td></tr>
+      <tr><td>15</td><td>7-7-7</td><td>Three 7s in one column</td></tr>
+      <tr><td>5</td><td>5 under 21</td><td>Five cards in one column, total under 21</td></tr>
+      <tr><td>21</td><td>Blackjack</td><td>Ace + ten-value in one column</td></tr>
+      <tr><td>50</td><td>Double Blackjack</td><td>Ace-queen Blackjack twice in a row</td></tr>
+      <tr><td>50</td><td>Super Blackjack</td><td>J&spades; + A&spades; together</td></tr>
+      <tr><td>100</td><td>5 of a Kind</td><td>All five column totals equal and &ge; 16. Clears the board.</td></tr>
+      <tr><td>100</td><td>Straight</td><td>All five column totals in 16&ndash;20. Clears the board.</td></tr>
+      <tr><td>200</td><td>Full House</td><td>6-6-3-3-3, 5-5-5-3-3, or 9-9-A-A-A in one column</td></tr>
+    </tbody>
+  </table>
+</details>
+
+  <footer id="credits">
+    21Deep · advisor: Alpha21 (value network trained by self-play) ·
+    <a href="https://github.com/erichershman/21deep">source on GitHub</a>
+  </footer>
+
+  <script src="game.js"></script>
+  <script src="advisor-ui.js"></script>
+</body>
+</html>

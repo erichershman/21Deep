@@ -1,0 +1,418 @@
+:root {
+  --card-w: 60px;
+  --card-h: 90px;
+
+  /* ---- Palette ---- */
+  --bg-0: #0f1117;
+  --bg-1: #161922;
+  --bg-2: rgba(255, 255, 255, 0.05);
+  --bg-3: rgba(255, 255, 255, 0.09);
+  --line: rgba(255, 255, 255, 0.08);
+  --line-strong: rgba(255, 255, 255, 0.14);
+  --text: #e8eaf1;
+  --muted: #8b93a7;
+  --dim: #5b6274;
+  --acc: #7c6cff;
+  --acc-2: #22d3ee;
+  --good: #34d399;
+  --warn: #fbbf24;
+  --input-bg: rgba(0, 0, 0, 0.35);
+  --row-line: rgba(255, 255, 255, 0.035);
+  --font: 'Inter', 'SF Pro Text', -apple-system, 'Segoe UI', system-ui, sans-serif;
+  --mono: ui-monospace, 'Cascadia Code', 'SF Mono', Consolas, monospace;
+}
+
+* { box-sizing: border-box; }
+
+body {
+  margin: 0;
+  font: 14px/1.4 var(--font);
+  background: var(--bg-0);
+  color: var(--text);
+  -webkit-font-smoothing: antialiased;
+}
+
+/* ---- Two-panel layout ---- */
+#game {
+  display: grid;
+  grid-template-columns: 220px 1fr;
+  gap: 16px;
+  padding: 20px;
+  max-width: 900px;
+  margin: 0 auto;
+}
+
+/* ---- Left panel: stats + draw area ---- */
+#left-panel {
+  background: linear-gradient(180deg, var(--bg-1), var(--bg-0));
+  border: 1px solid var(--line);
+  border-radius: 14px;
+  padding: 10px;
+  box-shadow: 0 12px 34px rgba(0, 0, 0, 0.35), inset 0 1px 0 rgba(255, 255, 255, 0.06);
+}
+
+.panel-header {
+  background: var(--bg-2);
+  border-bottom: 1px solid var(--line);
+  color: var(--muted);
+  text-align: center;
+  font-weight: 650;
+  font-size: 13px;
+  letter-spacing: 0.04em;
+  padding: 8px 0;
+  border-radius: 8px;
+  margin-bottom: 10px;
+}
+
+#stats {
+  width: 100%;
+  border-collapse: collapse;
+  background: var(--input-bg);
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  overflow: hidden;
+  margin-bottom: 12px;
+}
+#stats td {
+  padding: 6px 10px;
+  border-bottom: 1px solid var(--line);
+}
+#stats tr:last-child td { border-bottom: 0; }
+#stats td:first-child { color: var(--muted); }
+#stats td b {
+  color: var(--text);
+  font-variant-numeric: tabular-nums;
+}
+
+#draw-area { margin-top: 4px; }
+#draw-area .card-pair {
+  display: flex;
+  gap: 8px;
+  align-items: center;
+  justify-content: center;
+}
+#draw-area .deck-back { opacity: 0.85; }
+
+/* ---- Cards ---- */
+.card {
+  width: var(--card-w);
+  height: var(--card-h);
+  display: block;
+  border-radius: 6px;
+}
+
+/* ---- Columns ---- */
+#right-panel {
+  background: linear-gradient(180deg, #171a24, var(--bg-0));
+  border: 1px solid rgba(124, 108, 255, 0.28);
+  border-radius: 14px;
+  padding: 10px;
+  box-shadow: 0 12px 34px rgba(0, 0, 0, 0.35), inset 0 1px 0 rgba(255, 255, 255, 0.06);
+}
+
+#columns {
+  display: grid;
+  grid-template-columns: repeat(5, 1fr);
+  gap: 8px;
+}
+
+.column {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  padding: 6px;
+  background: var(--bg-1);
+  border: 1px solid var(--line);
+  border-radius: 10px;
+  min-height: 260px;
+}
+
+/* ---- Arrows ---- */
+.col-header {
+  padding: 6px 0;
+  background: none;
+  color: var(--muted);
+  border: 0;
+  border-radius: 0;
+  cursor: pointer;
+  box-shadow: none;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 32px;
+  transition: color .15s;
+}
+.col-header .arrow {
+  width: 20px;
+  height: 20px;
+  display: block;
+  color: currentColor;
+  transition: transform .1s, color .15s;
+}
+.col-header:hover:not(:disabled) { color: var(--acc); }
+.col-header:hover:not(:disabled) .arrow { transform: translateY(2px); }
+.col-header:focus-visible {
+  outline: none;
+  color: var(--acc-2);
+}
+.col-header:disabled {
+  color: var(--dim);
+  cursor: default;
+}
+.col-header:disabled .arrow { opacity: 0.35; }
+
+/* ---- Card stacks + sums ---- */
+.col-cards {
+  flex: 1;
+  position: relative;
+}
+.col-cards .card {
+  margin: 0 auto;
+  position: relative;
+}
+.col-cards .card + .card {
+  margin-top: calc(var(--card-h) * -0.70);
+}
+.col-sum {
+  background: var(--input-bg);
+  border-top: 1px solid rgba(124, 108, 255, 0.25);
+  border-radius: 6px;
+  padding: 6px 0;
+  font-weight: 650;
+  color: var(--good);
+  text-align: center;
+  font-variant-numeric: tabular-nums;
+}
+
+/* ---- Score message ---- */
+#message {
+  min-height: 52px;
+  margin-top: 12px;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  text-align: center;
+}
+#message.pop { animation: msg-in .25s ease-out; }
+@keyframes msg-in { from { opacity: 0; transform: translateY(4px); } }
+.msg-title {
+  font-size: 19px;
+  font-weight: 700;
+  letter-spacing: 0.01em;
+  background: linear-gradient(90deg, var(--acc), var(--acc-2));
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+}
+.msg-detail {
+  margin-top: 2px;
+  font-size: 12px;
+  color: var(--muted);
+  font-variant-numeric: tabular-nums;
+}
+#message.over .msg-title { background: none; color: var(--text); }
+
+/* ---- Scrollbars ---- */
+::-webkit-scrollbar { width: 10px; height: 10px; }
+::-webkit-scrollbar-thumb {
+  background: rgba(255, 255, 255, 0.30);
+  border-radius: 6px;
+  border: 2px solid transparent;
+  background-clip: content-box;
+}
+::-webkit-scrollbar-thumb:hover {
+  background: rgba(255, 255, 255, 0.5);
+  background-clip: content-box;
+}
+::-webkit-scrollbar-track { background: transparent; }
+#combos {
+  max-width: 900px;
+  margin: 0 auto 20px;
+  padding: 0 20px;
+}
+
+#combos summary {
+  background: var(--bg-2);
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  padding: 8px 14px;
+  color: var(--text);
+  font-weight: 650;
+  font-size: 13px;
+  cursor: pointer;
+  list-style: none;
+  user-select: none;
+}
+#combos summary::-webkit-details-marker { display: none; }
+#combos summary::after {
+  content: '▾';
+  float: right;
+  color: var(--muted);
+  transition: transform .15s;
+}
+#combos summary:hover { border-color: var(--line-strong); color: var(--acc); }
+#combos[open] summary {
+  border-radius: 8px 8px 0 0;
+  border-bottom-color: transparent;
+}
+#combos[open] summary::after { transform: rotate(180deg); }
+
+.combo-table {
+  width: 100%;
+  border-collapse: collapse;
+  background: var(--input-bg);
+  border: 1px solid var(--line);
+  border-top: 0;
+  border-radius: 0 0 8px 8px;
+  overflow: hidden;
+  font-size: 13px;
+}
+.combo-table th {
+  text-align: left;
+  padding: 7px 12px;
+  background: var(--bg-2);
+  border-bottom: 1px solid var(--line);
+  color: var(--muted);
+  font-size: 10px;
+  font-weight: 650;
+  text-transform: uppercase;
+  letter-spacing: .08em;
+}
+.combo-table td {
+  padding: 7px 12px;
+  border-bottom: 1px solid var(--row-line);
+  vertical-align: top;
+  color: var(--text);
+}
+.combo-table tr:last-child td { border-bottom: 0; }
+.combo-table td:first-child {
+  width: 60px;
+  text-align: right;
+  font-weight: 650;
+  font-variant-numeric: tabular-nums;
+  color: var(--good);
+}
+.combo-table td:nth-child(2) {
+  width: 150px;
+  font-weight: 550;
+  white-space: nowrap;
+}
+.combo-table td:last-child { color: var(--muted); }
+
+/* ---- New game ---- */
+#new-game {
+  display: block;
+  width: 100%;
+  margin-top: 12px;
+  padding: 8px 0;
+  font: 600 13px var(--font);
+  color: var(--text);
+  background: var(--bg-2);
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  cursor: pointer;
+  transition: border-color .15s, color .15s, box-shadow .15s;
+}
+#new-game:hover { border-color: var(--line-strong); color: var(--acc-2); }
+#new-game.attention {
+  color: #0f1117;
+  background: linear-gradient(90deg, var(--acc), var(--acc-2));
+  border-color: transparent;
+  box-shadow: 0 0 18px rgba(124, 108, 255, 0.45);
+}
+
+/* ---- Advisor bar + robot toggle ---- */
+#advisor-bar {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  gap: 10px;
+  margin-bottom: 8px;
+  min-height: 34px;
+}
+#advisor-status {
+  color: var(--muted);
+  font-size: 12px;
+  font-family: var(--mono);
+  font-variant-numeric: tabular-nums;
+}
+#robot {
+  display: grid;
+  place-items: center;
+  width: 38px;
+  height: 34px;
+  padding: 0;
+  color: var(--muted);
+  background: var(--bg-2);
+  border: 1px solid var(--line);
+  border-radius: 9px;
+  cursor: pointer;
+  transition: color .15s, border-color .15s, box-shadow .15s;
+}
+#robot:hover { color: var(--text); border-color: var(--line-strong); }
+#robot:focus-visible { outline: 2px solid var(--acc-2); outline-offset: 2px; }
+#robot.on {
+  color: var(--acc-2);
+  border-color: rgba(34, 211, 238, 0.5);
+  box-shadow: 0 0 14px rgba(34, 211, 238, 0.3), inset 0 0 8px rgba(124, 108, 255, 0.25);
+}
+#robot .eye { transition: opacity .2s; }
+#robot:not(.on) .eye { opacity: 0.45; }
+
+.column { transition: border-color .15s, box-shadow .15s; }
+.column.advice-best {
+  border-color: var(--good);
+  box-shadow: 0 0 0 1px var(--good), 0 0 18px rgba(52, 211, 153, 0.35);
+}
+.column.advice-alt { border-color: var(--line-strong); }
+.col-ev {
+  margin-top: -4px;
+  text-align: center;
+  font: 600 11px var(--mono);
+  color: var(--dim);
+  font-variant-numeric: tabular-nums;
+}
+.advice-best .col-ev { color: var(--good); }
+
+.visually-hidden {
+  position: absolute;
+  width: 1px; height: 1px;
+  overflow: hidden;
+  clip: rect(0 0 0 0);
+  white-space: nowrap;
+}
+
+/* ---- Footer ---- */
+#credits {
+  max-width: 900px;
+  margin: 0 auto 28px;
+  padding: 0 20px;
+  text-align: center;
+  font-size: 12px;
+  color: var(--dim);
+}
+#credits a { color: var(--muted); }
+#credits a:hover { color: var(--acc-2); }
+
+
+/* ---- Narrow screens ---- */
+@media (max-width: 720px) {
+  :root { --card-w: 52px; --card-h: 78px; }
+  #game { grid-template-columns: 1fr; padding: 12px; gap: 12px; }
+  #left-panel { display: grid; grid-template-columns: 1fr auto; gap: 10px; align-items: center; }
+  #left-panel .panel-header { grid-column: 1 / -1; margin-bottom: 0; }
+  #stats { margin-bottom: 0; }
+  #new-game { grid-column: 1 / -1; margin-top: 0; }
+  #columns { gap: 4px; }
+  .column { padding: 4px 2px; min-height: 220px; }
+  #message { grid-column: 1 / -1; min-height: 44px; margin-top: 0; }
+  #combos, #credits { padding: 0 12px; }
+  .combo-table td:nth-child(2) { width: auto; white-space: normal; }
+}
+
+.col-sum .sum-or {
+  margin: 0 4px;
+  font-size: 10px;
+  font-weight: 500;
+  color: var(--muted);
+}
